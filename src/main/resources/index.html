@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aurora Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&subset=vietnamese&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fb;--surface:#ffffff;--surface-2:#eef1f8;--fg:#14172b;--mut:#6b7190;--line:#e2e6f0;
+  --acc:#5b5bf6;--acc-2:#8b5cf6;--acc-soft:#ecebff;
+  --ok:#14a05b;--ok-soft:#e3f6ec;--warn:#c27c0e;--warn-soft:#fdf2dc;--err:#d93b3b;--err-soft:#fde6e6;
+  --shadow:0 1px 2px rgba(20,23,43,.04),0 8px 24px rgba(20,23,43,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d0f18;--surface:#161927;--surface-2:#1e2233;--fg:#eceef7;--mut:#959bb8;--line:#272b3f;
+  --acc:#7c7cff;--acc-2:#a78bfa;--acc-soft:#23244a;
+  --ok:#3ccf86;--ok-soft:#13301f;--warn:#f0b040;--warn-soft:#33270e;--err:#ff6b6b;--err-soft:#3a1616;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  --bg:#0d0f18;--surface:#161927;--surface-2:#1e2233;--fg:#eceef7;--mut:#959bb8;--line:#272b3f;
+  --acc:#7c7cff;--acc-2:#a78bfa;--acc-soft:#23244a;
+  --ok:#3ccf86;--ok-soft:#13301f;--warn:#f0b040;--warn-soft:#33270e;--err:#ff6b6b;--err-soft:#3a1616;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 "Nunito",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 48px}
+
+header{display:flex;align-items:center;gap:12px;padding:20px 0 12px;flex-wrap:wrap}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc-2));display:grid;place-items:center;color:#fff;flex:none}
+.brand h1{font-size:20px;font-weight:900;margin:0;line-height:1.1}
+.brand p{margin:0;color:var(--mut);font-size:13px}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.dot.on{background:var(--ok)}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;flex:none}
+.icon-btn:hover{border-color:var(--acc);color:var(--acc)}
+svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:12px;margin:8px 0 16px;width:max-content;max-width:100%}
+.tab{border:0;background:none;padding:8px 16px;border-radius:9px;font-weight:800;color:var(--mut);cursor:pointer}
+.tab.active{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.tab .count{background:var(--acc-soft);color:var(--acc);border-radius:99px;padding:0 7px;font-size:12px;margin-left:4px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.search{display:flex;gap:8px;flex-wrap:wrap}
+.field{flex:1 1 280px;min-width:0;display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1.5px solid transparent;border-radius:12px;padding:0 6px 0 12px}
+.field:focus-within{border-color:var(--acc);background:var(--surface)}
+.field input{flex:1;min-width:0;border:0;background:none;outline:none;padding:12px 0}
+.field>svg{color:var(--mut);flex:none}
+.paste{border:0;background:none;color:var(--mut);cursor:pointer;padding:6px;border-radius:8px;display:grid;place-items:center}
+.paste:hover{color:var(--acc);background:var(--acc-soft)}
+select{background:var(--surface-2);border:1.5px solid transparent;border-radius:12px;padding:0 12px;height:46px;font-weight:700;cursor:pointer;outline:none}
+select:focus{border-color:var(--acc)}
+.btn{border:0;border-radius:12px;padding:0 18px;height:46px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc-2));color:#fff}
+.btn-primary:hover{filter:brightness(1.07)}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-ghost{background:var(--surface-2);color:var(--fg)}
+.btn-ghost:hover{background:var(--acc-soft);color:var(--acc)}
+.btn-sm{height:34px;padding:0 10px;border-radius:10px;font-size:13px}
+.btn:disabled{opacity:.55;cursor:wait}
+.hint{color:var(--mut);font-size:13px;margin:12px 2px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:800;cursor:pointer}
+.chip:hover{border-color:var(--acc);color:var(--acc)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.result{display:flex;gap:12px;align-items:center;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;width:100%;transition:transform .15s,border-color .15s}
+.result:hover{border-color:var(--acc);transform:translateY(-1px)}
+.ic{width:48px;height:48px;border-radius:12px;background:var(--surface-2);flex:none;object-fit:cover}
+.result .t,.row .t{font-weight:800;line-height:1.3;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.result .s,.row .s{color:var(--mut);font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.min{min-width:0}
+
+.app{display:flex;gap:16px;align-items:flex-start}
+.app .ic{width:80px;height:80px;border-radius:20px}
+.app h2{margin:0;font-size:20px;font-weight:900;line-height:1.25}
+.app .dev{color:var(--acc);font-weight:800;font-size:14px}
+.app .pkg{color:var(--mut);font-size:12px;display:flex;align-items:center;gap:4px;word-break:break-all}
+.app .pkg button{border:0;background:none;color:var(--mut);cursor:pointer;padding:2px}
+.app .pkg button:hover{color:var(--acc)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.stat{background:var(--surface-2);border-radius:12px;padding:10px;text-align:center;min-width:0}
+.stat b{display:block;font-size:15px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat span{color:var(--mut);font-size:12px}
+.summary{color:var(--mut);margin:0 0 12px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:800}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.err{background:var(--err-soft);color:var(--err)}.tag.info{background:var(--acc-soft);color:var(--acc)}
+.ver{margin-top:12px;font-size:13px;color:var(--mut)}
+.ver summary{cursor:pointer;font-weight:800;color:var(--acc);width:max-content}
+.ver .vrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.ver input{width:170px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface-2);padding:0 10px;outline:none;font-weight:700}
+.ver input:focus{border-color:var(--acc)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}
+
+.prog{margin-top:16px}
+.bar{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc-2));border-radius:99px;transition:width .3s}
+.bar.indet i{width:35%;animation:indet 1.1s infinite ease-in-out}
+@keyframes indet{0%{margin-left:-35%}100%{margin-left:100%}}
+.prog .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-top:6px;gap:8px;flex-wrap:wrap}
+
+.done{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:16px;padding:14px;border-radius:14px;background:var(--ok-soft)}
+.done .qr{background:#fff;padding:8px;border-radius:10px;flex:none}
+.done .qr img,.done .qr canvas{display:block;width:112px;height:112px}
+.done .txt{flex:1;min-width:200px}
+.done .txt b{color:var(--ok)}
+.guide{font-size:13px;color:var(--mut);margin:6px 0 10px}
+.parts{font-size:12px;color:var(--mut);margin:4px 0 6px;word-break:break-all}
+
+.hist{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.row .act{display:flex;gap:6px;flex:none}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.empty svg{width:40px;height:40px;opacity:.5}
+
+.modal{position:fixed;inset:0;background:rgba(10,12,20,.55);display:none;place-items:center;padding:16px;z-index:10}
+.modal.show{display:grid}
+.modal .box{background:var(--surface);border-radius:20px;padding:22px;max-width:320px;width:100%;text-align:center}
+.modal .box .q{background:#fff;padding:12px;border-radius:14px;display:inline-block;margin:12px 0}
+.modal .box .q img,.modal .box .q canvas{display:block;width:220px;height:220px;max-width:100%}
+.modal .box p{color:var(--mut);font-size:13px;word-break:break-all;margin:0 0 12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:800;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:20;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.muted{color:var(--mut)}
+.err-box{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--err-soft);color:var(--err);font-weight:700;margin-top:14px}
+.err-box svg{flex:none;margin-top:2px}
+.spin{width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+
+@media (max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .app .ic{width:64px;height:64px;border-radius:16px}
+  .search select,.search .btn{flex:1}
+  header .ipp{order:5;width:100%;justify-content:center}
+  .row .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></div>
+    <div class="brand"><h1>Aurora Web</h1><p>Tải APK mới nhất từ Google Play · ẩn danh</p></div>
+    <div class="spacer"></div>
+    <span class="pill ipp" title="IP mà Google Play nhìn thấy"><span class="dot" id="ipdot"></span><span id="ip">Đang kiểm tra IP…</span></span>
+    <button class="icon-btn" id="reset" title="Làm mới phiên (sau khi đổi VPN)"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+    <button class="icon-btn" id="phone" title="Mở trên điện thoại"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></button>
+    <button class="icon-btn" id="theme" title="Đổi sáng/tối"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="get">Tải app</button>
+    <button class="tab" data-tab="history">Đã tải <span class="count" id="hcount">0</span></button>
+  </nav>
+
+  <section id="tab-get">
+    <div class="card">
+      <form class="search" id="f">
+        <label class="field">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="inp" placeholder="Tên app, link Google Play hoặc package name" autocomplete="off" required>
+          <button type="button" class="paste" id="paste" title="Dán từ clipboard"><svg viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></button>
+        </label>
+        <select id="reg" title="Tải qua vùng nào"><option value="auto">🌐 Tự động</option></select>
+        <button class="btn btn-primary" id="go">Tìm</button>
+      </form>
+      <div class="hint">Thử nhanh:
+        <button class="chip" data-q="Firefox">Firefox</button>
+        <button class="chip" data-q="com.google.android.calculator">Máy tính Google</button>
+        <button class="chip" data-q="VLC">VLC</button>
+      </div>
+    </div>
+    <div id="view"></div>
+  </section>
+
+  <section id="tab-history" class="hidden">
+    <div class="card"><div class="hist" id="hist"></div></div>
+  </section>
+</div>
+
+<div class="modal" id="modal"><div class="box">
+  <h3 style="margin:0" id="mtitle">Quét để mở</h3>
+  <div class="q" id="mqr"></div>
+  <p id="murl"></p>
+  <button class="btn btn-ghost btn-sm" id="mclose">Đóng</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mb=b=>b>=1073741824?(b/1073741824).toFixed(2)+" GB":(b/1048576).toFixed(1)+" MB";
+const ago=t=>{const s=(Date.now()-t)/1000;if(s<60)return"vừa xong";if(s<3600)return Math.floor(s/60)+" phút trước";if(s<86400)return Math.floor(s/3600)+" giờ trước";return new Date(t).toLocaleDateString("vi-VN")};
+const ICON={
+  dl:'<svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
+  qr:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4"/></svg>',
+  del:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" style="width:14px;height:14px"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  warn:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.01"/></svg>',
+  box:'<svg viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>',
+  play:'<svg viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>',
+};
+let lan=[], busy=false;
+
+/* ---------- Toast / modal / theme ---------- */
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2400)}
+function qrInto(el,url,size){el.innerHTML="";if(window.QRCode)new QRCode(el,{text:url,width:size,height:size,correctLevel:QRCode.CorrectLevel.M});else el.textContent="(không tải được thư viện QR)"}
+function showQR(title,url){$("#mtitle").textContent=title;$("#murl").textContent=url;qrInto($("#mqr"),url,220);$("#modal").classList.add("show")}
+$("#mclose").onclick=()=>$("#modal").classList.remove("show");
+$("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").classList.remove("show")};
+const pref=()=>{try{return localStorage.getItem("theme")}catch{return null}};
+function applyTheme(t){if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}
+applyTheme(pref());
+$("#theme").onclick=()=>{
+  const cur=document.documentElement.dataset.theme;
+  const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  const t=dark?"light":"dark";applyTheme(t);try{localStorage.setItem("theme",t)}catch{}
+};
+
+/* ---------- Tabs ---------- */
+$$(".tab").forEach(b=>b.onclick=()=>{
+  $$(".tab").forEach(x=>x.classList.toggle("active",x===b));
+  $("#tab-get").classList.toggle("hidden",b.dataset.tab!=="get");
+  $("#tab-history").classList.toggle("hidden",b.dataset.tab!=="history");
+  if(b.dataset.tab==="history")loadHistory();
+});
+
+/* ---------- Network: regions, IP, LAN ---------- */
+async function api(url,opt){
+  const r=await fetch(url,opt);const d=await r.json().catch(()=>({message:"Server trả về không hợp lệ"}));
+  if(!r.ok)throw new Error(d.message||("HTTP "+r.status));return d;
+}
+const curRegion=()=>$("#reg").value==="auto"?"direct":$("#reg").value;
+async function checkIp(){
+  $("#ip").textContent="Đang kiểm tra IP…";$("#ipdot").className="dot";
+  try{const d=await api("/api/ip?region="+encodeURIComponent(curRegion()));$("#ip").textContent=`${d.country} · ${d.ip}`;$("#ipdot").className="dot on"}
+  catch{$("#ip").textContent="Không kiểm tra được IP"}
+}
+api("/api/regions").then(list=>{
+  for(const g of list)$("#reg").insertAdjacentHTML("beforeend",`<option value="${esc(g.id)}">${g.id==="direct"?"💻":"🌍"} ${esc(g.label)}</option>`);
+}).catch(()=>{}).finally(checkIp);
+api("/api/lan").then(l=>lan=l).catch(()=>{});
+$("#reg").onchange=checkIp;
+$("#reset").onclick=async()=>{await api("/api/reset",{method:"POST"}).catch(()=>{});await checkIp();toast("Đã làm mới phiên Google Play")};
+$("#phone").onclick=()=>lan.length?showQR("Mở trên điện thoại",lan[0]):toast("Không tìm thấy địa chỉ mạng LAN");
+const lanUrl=path=>(lan[0]||location.origin)+path;
+
+/* ---------- Input ---------- */
+const isPkg=t=>/[?&]id=[\w.]+/.test(t)||/^[a-zA-Z][\w]*(\.[a-zA-Z_][\w]*)+$/.test(t.trim());
+$("#paste").onclick=async()=>{try{$("#inp").value=await navigator.clipboard.readText();$("#inp").oninput();$("#inp").focus()}catch{toast("Trình duyệt không cho đọc clipboard — dùng ⌘V")}};
+$("#inp").oninput=()=>{$("#go").textContent=isPkg($("#inp").value)?"Xem app":"Tìm"};
+$$(".chip").forEach(c=>c.onclick=()=>{$("#inp").value=c.dataset.q;$("#inp").oninput();go()});
+$("#f").onsubmit=e=>{e.preventDefault();go()};
+function go(){const v=$("#inp").value.trim();if(!v)return;isPkg(v)?openApp(v):search(v)}
+const view=h=>$("#view").innerHTML=h;
+const loading=m=>view(`<div class="card muted" style="display:flex;gap:10px;align-items:center"><span class="spin"></span>${esc(m)}</div>`);
+const errorCard=m=>view(`<div class="card"><div class="err-box" style="margin:0">${ICON.warn}<div>${esc(m)}</div></div></div>`);
+
+/* ---------- Search ---------- */
+async function search(q){
+  loading(`Đang tìm “${q}”…`);
+  try{
+    const list=await api(`/api/search?q=${encodeURIComponent(q)}&region=${encodeURIComponent(curRegion())}`);
+    if(!list.length)return view(`<div class="card empty">Không tìm thấy app nào cho “${esc(q)}”.</div>`);
+    view(`<div class="card"><div class="muted" style="margin-bottom:10px;font-weight:800">${list.length} kết quả cho “${esc(q)}”</div>
+      <div class="grid">${list.map(a=>`<button class="result" data-pkg="${esc(a.packageName)}">
+        <img class="ic" src="${esc(a.icon)}" alt="" loading="lazy"><div class="min"><div class="t">${esc(a.name)}</div>
+        <div class="s">${esc(a.developer)}</div>
+        <div class="s">${a.rating?"★ "+a.rating.toFixed(1)+" · ":""}${esc(a.installs||a.packageName)}</div></div></button>`).join("")}</div></div>`);
+    $$(".result").forEach(b=>b.onclick=()=>{$("#inp").value=b.dataset.pkg;$("#inp").oninput();openApp(b.dataset.pkg)});
+  }catch(e){errorCard(e.message)}
+}
+
+/* ---------- App detail + download ---------- */
+function appHead(a){
+  const stats=[
+    [a.rating?("★ "+a.rating.toFixed(1)):"—","Đánh giá"],
+    [a.installs||"—","Lượt tải"],
+    [a.size?mb(a.size):"—","Dung lượng"],
+    [a.versionName||"—","Phiên bản"],
+  ];
+  return `<div class="app">${a.icon?`<img class="ic" src="${esc(a.icon)}" alt="">`:`<div class="ic"></div>`}
+    <div class="min"><h2>${esc(a.name||a.packageName)}</h2><div class="dev">${esc(a.developer)}</div>
+    <div class="pkg">${esc(a.packageName)} <button title="Sao chép package" data-copy="${esc(a.packageName)}">${ICON.copy}</button></div></div></div>
+    <div class="stats">${stats.map(([b,s])=>`<div class="stat"><b title="${esc(b)}">${esc(b)}</b><span>${s}</span></div>`).join("")}</div>
+    ${a.summary?`<p class="summary">${esc(a.summary)}</p>`:""}
+    <div class="tags">${a.category?`<span class="tag info">${esc(a.category)}</span>`:""}
+      ${a.updated?`<span class="tag info">Cập nhật ${esc(a.updated)}</span>`:""}
+      <span class="tag ok">Tải qua: ${esc(a.regionLabel||a.region)}</span>
+      ${a.free?"":'<span class="tag err">App trả phí</span>'}</div>`;
+}
+function bindCopy(){$$("[data-copy]").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.copy).then(()=>toast("Đã sao chép "+b.dataset.copy),()=>{})})}
+
+async function openApp(input){
+  loading("Đang lấy thông tin app…");
+  const region=$("#reg").value;
+  let a;
+  try{a=await api(`/api/details?input=${encodeURIComponent(input)}&region=${encodeURIComponent(region)}`)}
+  catch(e){return errorCard(e.message)}
+  view(`<div class="card">${appHead(a)}
+    <div class="actions">
+      <button class="btn btn-primary" id="dl">${ICON.dl} Tải APK</button>
+      <a class="btn btn-ghost" href="https://play.google.com/store/apps/details?id=${encodeURIComponent(a.packageName)}" target="_blank" rel="noopener">${ICON.play} Xem trên Play</a>
+    </div>
+    <details class="ver"><summary>Tải phiên bản khác (bản cũ)</summary>
+      <div>Nhập <b>versionCode</b> của bản muốn tải. Bản mới nhất là <b>${a.versionCode}</b>. Google không cho xem danh sách bản cũ, nên cần biết versionCode, có thể tra trên APKMirror. Play chỉ trả các bản cũ nó còn giữ.</div>
+      <div class="vrow"><input id="vc" inputmode="numeric" placeholder="vd: ${a.versionCode-1}" value="">
+        <button class="btn btn-ghost btn-sm" id="dlv">${ICON.dl} Tải bản này</button>
+        <span class="muted" id="vchint"></span></div>
+    </details>
+    <div id="dlarea"></div></div>`);
+  bindCopy();
+  $("#dl").onclick=()=>startDownload(a.packageName,a.region||region);
+  $("#dlv").onclick=()=>{
+    const v=$("#vc").value.trim();
+    if(!/^\d+$/.test(v))return toast("versionCode phải là số");
+    startDownload(a.packageName,a.region||region,Number(v));
+  };
+}
+
+async function startDownload(pkg,region,versionCode){
+  if(busy)return toast("Đang có một lượt tải, chờ chút nhé");
+  busy=true;$("#dl").disabled=true;$("#dlv").disabled=true;
+  $("#dlarea").innerHTML=`<div class="prog"><div class="bar indet" id="bar"><i></i></div>
+    <div class="meta"><span id="pstage">Đang chuẩn bị…</span><span id="pnum"></span></div></div>`;
+  const t0=Date.now();
+  const poll=setInterval(async()=>{
+    try{
+      const p=await api("/api/progress?pkg="+encodeURIComponent(pkg));
+      const bar=$("#bar");if(!bar)return;
+      if(p.stage==="download"&&p.total){
+        bar.classList.remove("indet");const pct=Math.min(100,p.done/p.total*100);bar.firstElementChild.style.width=pct.toFixed(1)+"%";
+        const sp=p.done/Math.max(1,(Date.now()-t0)/1000);
+        $("#pstage").textContent=`Đang tải ${p.file||""} · ${mb(sp)}/s`;
+        $("#pnum").textContent=`${mb(p.done)} / ${mb(p.total)} · ${pct.toFixed(0)}%`;
+      }else if(p.stage==="resolve"){$("#pstage").textContent="Đang hỏi Google Play danh sách file…"}
+      else if(p.stage==="resolve-extra"){$("#pstage").textContent=`Đang lấy split cho các loại máy khác (${p.done}/${p.total})…`}
+      else if(p.stage==="pack"){bar.classList.add("indet");$("#pstage").textContent="Đang đóng gói…"}
+    }catch{}
+  },700);
+  try{
+    const d=await api("/api/download",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({input:pkg,region,versionCode:versionCode??null})});
+    const split=d.file.endsWith(".apks");
+    const url="/files/"+encodeURIComponent(d.file);
+    $("#dlarea").innerHTML=`<div class="done"><div class="qr" id="qr"></div><div class="txt">
+      <div><b>✓ ${d.cached?"Đã có sẵn":"Tải xong"}</b> · ${esc(d.file)} · ${mb(d.size)}</div>
+      <div class="tags">${split?'<span class="tag warn">Gói split · cài bằng SAI</span>':'<span class="tag ok">1 file · cài thẳng</span>'}
+        <span class="tag ok">Giữ chữ ký gốc</span>${d.skippedObb?`<span class="tag warn">Bỏ qua ${d.skippedObb} OBB</span>`:""}</div>
+      ${d.parts.length>1?`<div class="parts">${d.parts.map(esc).join(" · ")}</div>`:""}
+      <div class="guide">${split?"Mở file bằng app <b>SAI</b> (Split APKs Installer) trên điện thoại → Install APKs.":"Mở file trên điện thoại để cài, cho phép “Cài từ nguồn không xác định” nếu được hỏi."} Quét QR để tải thẳng về điện thoại (cùng Wi-Fi).</div>
+      <a class="btn btn-ok" href="${url}">${ICON.dl} Tải ${split?".apks":".apk"} (${mb(d.size)})</a></div></div>`;
+    qrInto($("#qr"),lanUrl(url),112);
+    refreshCount();
+  }catch(e){
+    $("#dlarea").innerHTML=`<div class="err-box">${ICON.warn}<div>${esc(e.message)}</div></div>`;
+  }finally{clearInterval(poll);busy=false;for(const id of["#dl","#dlv"]){const b=$(id);if(b)b.disabled=false}}
+}
+
+/* ---------- History ---------- */
+async function refreshCount(){try{const l=await api("/api/files");$("#hcount").textContent=l.length;return l}catch{return[]}}
+async function loadHistory(){
+  const l=await refreshCount();
+  if(!l.length){$("#hist").innerHTML=`<div class="empty">${ICON.box}<div>Chưa tải app nào.</div></div>`;return}
+  $("#hist").innerHTML=l.map(f=>{
+    const a=f.app||{};const url="/files/"+encodeURIComponent(f.name);
+    return `<div class="row">${a.icon?`<img class="ic" src="${esc(a.icon)}" alt="">`:`<div class="ic" style="display:grid;place-items:center;color:var(--mut)">${ICON.box}</div>`}
+      <div class="min" style="flex:1"><div class="t">${esc(a.name||f.name)}</div>
+      <div class="s">${a.versionName?"v"+esc(a.versionName)+" · ":""}${mb(f.size)} · ${f.name.endsWith(".apks")?"split":"apk"} · ${ago(f.modified)}</div>
+      <div class="s hide-sm">${esc(f.name)}</div></div>
+      <div class="act">
+        <a class="btn btn-ghost btn-sm" href="${url}" title="Tải về">${ICON.dl}</a>
+        <button class="btn btn-ghost btn-sm" data-qr="${esc(url)}" data-n="${esc(a.name||f.name)}" title="QR cho điện thoại">${ICON.qr}</button>
+        <button class="btn btn-ghost btn-sm" data-del="${esc(f.name)}" title="Xoá">${ICON.del}</button>
+      </div></div>`}).join("");
+  $$("[data-qr]").forEach(b=>b.onclick=()=>showQR(b.dataset.n,lanUrl(b.dataset.qr)));
+  $$("[data-del]").forEach(b=>b.onclick=async()=>{
+    if(!confirm("Xoá "+b.dataset.del+"?"))return;
+    try{await api("/api/files/"+encodeURIComponent(b.dataset.del),{method:"DELETE"});toast("Đã xoá");loadHistory()}catch(e){toast(e.message)}
+  });
+}
+refreshCount();
+</script>
+</body>
+</html>

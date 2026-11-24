@@ -1,0 +1,15 @@
+# Proxy nước ngoài để tải app bị chặn ở VN. Google Play xác định quốc gia theo IP.
+# Mỗi dòng:   mã   Tên hiển thị   proxy-url
+# proxy-url:  socks5://user:pass@host:port   hoặc   http://user:pass@host:port   (user:pass nếu có)
+#
+# Ví dụ (bỏ dấu # đầu dòng và thay bằng proxy thật):
+# us   Mỹ        socks5://user:pass@us.proxy-cua-ban.com:1080
+# jp   Nhật      http://user:pass@1.2.3.4:8080
+# sg   Singapore socks5://127.0.0.1:1080
+#
+# Cách dễ nhất: thuê VPS rẻ ở nước cần (Mỹ, Nhật...) rồi mở đường hầm SOCKS từ máy này:
+#     ssh -N -D 1080 root@IP-VPS
+# rồi bỏ # ở dòng dưới:
+# us   Mỹ (VPS)  socks5://127.0.0.1:1080
+#
+# Lưu ý: Tor KHÔNG dùng được — Google không nhận IP Tor là IP Mỹ (đã thử, app Mỹ vẫn bị chặn).

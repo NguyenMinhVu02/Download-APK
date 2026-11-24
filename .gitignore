@@ -1,0 +1,18 @@
+# Build
+.gradle/
+build/
+.kotlin/
+*.class
+
+# Dữ liệu chạy
+out/
+*.log
+
+# Cấu hình riêng (có thể chứa user/pass proxy)
+proxies.txt
+
+# IDE / hệ điều hành
+.idea/
+*.iml
+.vscode/
+.DS_Store
